@@ -1,0 +1,4 @@
+atm_id,event_date,day_of_week,is_weekend,total_errors,hardware_error,cdm_error
+ATM_DEMO_001,2026-05-19,6,1,2,0,1
+ATM_DEMO_002,2026-05-19,6,1,8,2,3
+ATM_DEMO_003,2026-05-19,6,1,1,0,0
