@@ -1,0 +1,30 @@
+# Security
+*.env
+.env
+secrets.json
+credentials.json
+database_credentials.txt
+
+# Data (large files)
+*.pkl
+*.joblib
+data/*.csv
+!data/sample_*.csv  # Keep sample data
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ipynb_checkpoints/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
