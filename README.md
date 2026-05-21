@@ -4,18 +4,18 @@
 
 An end-to-end machine learning system that predicts ATM failures 24 hours in advance using advanced feature engineering, ensemble models, and real-time monitoring.
 
-## 🎯 Project Overview
+## Project Overview
 
 This system transformed ATM maintenance from **reactive** (fixing failures after they occur) to **proactive** (preventing failures before customers are affected).
 
 ### Key Achievement
-- **v2.2 Production Model**: XGBoost ensemble with 249 engineered features
+- **Production Model**: XGBoost ensemble with 249 engineered features
 - **PR-AUC**: 0.85 on validation set
 - **Recall**: 81% average (weekday), 71% (weekend)
 - **Daily Deployment**: Automated scoring of 130+ ATMs
 - **Infrastructure Event Detection**: Identifies fleet-wide outages vs. individual failures
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────┐
@@ -37,7 +37,7 @@ This system transformed ATM maintenance from **reactive** (fixing failures after
 ┌──────────────────────────────┐
 │  Model Training              │
 │  • Random Forest             │
-│  • XGBoost v2.2 (selected)  │
+│  • XGBoost  (selected)       │
 │  • LightGBM                  │
 │  • Isotonic Calibration      │
 └────────┬─────────────────────┘
@@ -59,7 +59,7 @@ This system transformed ATM maintenance from **reactive** (fixing failures after
 └──────────────────────────────┘
 ```
 
-## 📊 Feature Engineering (249 Features)
+## Feature Engineering (249 Features)
 
 ### Component State Features (21)
 Flags and rolling averages for each ATM component:
@@ -99,7 +99,7 @@ Interactions between error types:
 - Cassette supply pressure
 - Receipt supply pressure
 
-## 🤖 Models & Selection
+## Models & Selection
 
 Three ensemble models trained in parallel:
 
@@ -109,12 +109,12 @@ Three ensemble models trained in parallel:
 | **XGBoost** | **Boosting** | **0.85** | **Selected - Best overall** |
 | LightGBM | Gradient Boost | 0.81 | Fast inference |
 
-### Winner: XGBoost v2.2
+### Winner: XGBoost 
 - 300 trees, max_depth=8, learning_rate=0.05
 - Scale positive weights for class imbalance
 - Sample weights boost critical-event rows by 2x
 
-## 🎚️ Probability Calibration
+## Probability Calibration
 
 **Fix #6: Isotonic Regression**
 
@@ -129,7 +129,7 @@ Solution: Isotonic regression learns a monotonic mapping from raw→calibrated p
 - ROC-AUC preserved (within 0.005)
 - Probabilities now match observed frequencies
 
-## 📈 Risk Tiers
+## Risk Tiers
 
 Probabilities mapped to business-calibrated risk levels:
 
@@ -142,7 +142,7 @@ Probabilities mapped to business-calibrated risk levels:
 
 Thresholds calibrated to 3:1 cost ratio (missing a failure is 3× more expensive than unnecessary dispatch).
 
-## 🚨 Correlated Failure Detection
+## Correlated Failure Detection
 
 When >50% of fleet flagged HIGH/CRITICAL on same day:
 - Tag as potential infrastructure event
@@ -151,7 +151,7 @@ When >50% of fleet flagged HIGH/CRITICAL on same day:
 
 Example: Network outage on 2026-04-23 affected 128 ATMs simultaneously.
 
-## 📊 Daily Predictions
+## Daily Predictions
 
 ### Input
 - 15-day historical data for rolling window computation
@@ -175,7 +175,7 @@ ATM_DEMO_002,0.42,HIGH,7,2,Branch_B
 ATM_DEMO_003,0.08,LOW,2,0,Branch_C
 ```
 
-## 📡 Monitoring System
+## Monitoring System
 
 ### Daily Evaluation
 Compares yesterday's predictions to actual failures:
@@ -204,7 +204,7 @@ CRITICAL tier: 83% actual failure rate
 HIGH tier: 32% actual failure rate
 ```
 
-## 🔧 Getting Started
+## Getting Started
 
 ### Requirements
 ```bash
@@ -263,7 +263,7 @@ python src/monitoring.py --predictions-file data/sample_predictions.csv
 jupyter notebook notebooks/01_exploratory_analysis.ipynb
 ```
 
-## 📚 Key Scripts
+## Key Scripts
 
 ### `feature_engineering.py`
 Shared feature engineering module used by both training and scoring:
@@ -302,10 +302,10 @@ Daily evaluation of model performance:
 - Generates alerts if thresholds breached
 - Logs performance history
 
-## 🔍 Model Interpretability
+## Model Interpretability
 
 ### Feature Importance
-Top features for XGBoost v2.2:
+Top features for XGBoost :
 
 1. `day_of_week` - Temporal pattern strong predictor
 2. `dispenser_not_operational_7d` - Recent dispenser issues
@@ -327,7 +327,7 @@ shap.summary_plot(shap_values, X_test)
 
 Shows which features pushed each ATM's score up/down.
 
-## 📊 Results & Impact
+## Results & Impact
 
 ### Production Metrics
 - **Daily execution**: 01:00 EET predictions, 08:00 EET evaluation
@@ -342,7 +342,7 @@ Shows which features pushed each ATM's score up/down.
 - Cost-calibrated risk tiers guide dispatch priorities
 - SHAP interpretability builds trust with operations team
 
-## 🔐 Data Privacy
+## Data Privacy
 
 This repository contains:
 - ✅ Feature engineering approach
@@ -356,13 +356,13 @@ This repository contains:
 
 All data in this repo is synthetic/example data for demonstration.
 
-## 📖 Documentation
+## Documentation
 
 - **ARCHITECTURE.md** - System design and data flow
 - **METHODOLOGY.md** - Feature engineering and modeling approach
 - **TROUBLESHOOTING.md** - Common issues and solutions
 
-## 🚀 Deployment Notes
+## Deployment Notes
 
 ### Production Environment
 - Docker container (reproducible environment)
@@ -376,32 +376,6 @@ All data in this repo is synthetic/example data for demonstration.
 - Recall floor: 0.50
 - Unknown branch ceiling: 10
 - Auto-retrain trigger if 5-day rolling fails any condition
-
-## 🔄 Continuous Improvement
-
-### Next Steps
-- [ ] Two-week observation window for weekend recall
-- [ ] Quarterly retrain (fresh data extraction)
-- [ ] Enhance feature engineering with domain feedback
-- [ ] Integration with operations scheduling system
-
-### Known Limitations
-- Features strongly depend on temporal patterns (may shift seasonally)
-- Correlated failure threshold (50%) may need adjustment by domain expert
-- Real performance varies by ATM population and branch
-- Requires continuous monitoring in production
-
-## 📞 Questions?
-
-This is a sanitized, educational version of a production system. For implementation in your environment, ensure you:
-- Adapt feature engineering to your data schema
-- Validate thresholds with your domain experts
-- Establish proper monitoring and alerting
-- Plan for regular retraining with fresh data
-
-## 📜 License
-
-MIT License - feel free to use for learning and reference.
 
 ---
 
